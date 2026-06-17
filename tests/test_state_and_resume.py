@@ -89,7 +89,7 @@ class ResumePipelineTests(unittest.TestCase):
         initialize_state(state, datasets, experiments)
         initialize_state(state, datasets, experiments)
         summary = summarize_tasks(PipelineState.load(paths.state_file).tasks())
-        self.assertEqual(summary["ready"], 2)
+        self.assertEqual(summary["ready"], 3)
 
     def test_download_archive_is_unpacked_before_expected_file_check(self) -> None:
         paths = self.make_paths()

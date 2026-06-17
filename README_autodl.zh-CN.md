@@ -166,6 +166,48 @@ python -m biasseeker.cli run
 
 系统会自动检测新文件，并从之前失败的位置继续执行后续步骤。
 
+## 中间输入如何生成
+
+项目现在会在 `derive_inputs` 阶段自动生成两类关键中间输入：
+
+```text
+data/processed/<dataset_id>/labels.csv
+data/processed/<dataset_id>/derived_inputs/
+```
+
+其中 `derived_inputs/` 里包含：
+
+```text
+decision_tree_features.csv
+netmamba/train/<class_name>/
+netmamba/valid/<class_name>/
+netmamba/test/<class_name>/
+```
+
+自动生成逻辑是：
+
+- 从 `tshark` 解析后的 `packet_fields.jsonl` 读取 packet 字段。
+- 优先使用已有的 `labels.csv`。
+- 如果没有 `labels.csv`，尝试从 pcap 文件名、字段中的 SNI/host/stream 等信息推断标签。
+- 根据 session/stream 信息生成 Decision Tree 特征。
+- 根据双向 session flow 规则生成 NetMamba 输入目录，样本保存为官方 `ImageFolder` 可读取的 40x40 灰度 PNG。
+
+如果标签无法可靠推断，系统会停在 `derive_inputs`，并要求你手动提供：
+
+```text
+data/processed/<dataset_id>/labels.csv
+```
+
+全局 NetMamba 重新预训练输入也会自动聚合到：
+
+```text
+data/processed/netmamba_pretrain/bidirectional_sessions/
+```
+
+它由 6 个预训练数据集的 `derived_inputs/netmamba/` 合并而来。
+
+注意：如果 `tshark -x` 没能提供原始 packet bytes，脚本会生成可恢复的占位 PNG 并在后续报告中保留偏差记录；论文级精确复现仍应以真实 raw bytes 为准。
+
 ## 失败不会被跳过
 
 这个工程的设计原则是：失败必须可见，不能偷偷跳过。

@@ -68,7 +68,7 @@ def _write_main_report(
         handle.write("- Original paper does not disclose all random seeds, exact sampled class IDs, private preprocessing scripts, or NetMamba checkpoint hashes.\n")
         handle.write("- NetMamba must be re-pre-trained for this paper reproduction; the original NetMamba paper checkpoint is only a setup/reference artifact.\n")
         handle.write("- NetMamba inputs must use bidirectional session flows and mitigation-specific header handling, matching the BiasSeeker paper rather than the original NetMamba paper setup.\n")
-        handle.write("- Decision Tree feature matrices must be generated from the same mitigation inputs and splits before Decision Tree tasks can complete.\n")
+        handle.write("- Decision Tree feature matrices are derived automatically from normalized packet fields when labels can be inferred or provided.\n")
 
 
 def _write_application_report(

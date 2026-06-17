@@ -21,12 +21,14 @@ def build_tasks(datasets: list[dict[str, Any]], experiments: dict[str, Any]) -> 
     netmamba_cfg = experiments.get("models", {}).get("netmamba", {})
 
     if netmamba_cfg.get("enabled", True) and netmamba_cfg.get("pretrain_required"):
+        tasks.append(TaskKey(dataset="__global__", stage="netmamba_pretrain_prepare"))
         tasks.append(TaskKey(dataset="__global__", stage="netmamba_pretrain"))
 
     for dataset in datasets:
         dataset_id = dataset["id"]
         for stage in base_stages:
             tasks.append(TaskKey(dataset=dataset_id, stage=stage))
+        tasks.append(TaskKey(dataset=dataset_id, stage="derive_inputs"))
         if dataset.get("mitigation"):
             tasks.append(TaskKey(dataset=dataset_id, stage="split"))
             for strategy in strategies:
@@ -46,14 +48,20 @@ def dependencies_completed(state: PipelineState, key: TaskKey, experiments: dict
     if key.stage == "download":
         return True
     if key.stage == "netmamba_pretrain":
+        if not _is_completed(state, TaskKey(dataset="__global__", stage="netmamba_pretrain_prepare")):
+            return False
+        return True
+    if key.stage == "netmamba_pretrain_prepare":
         for dataset_id in experiments.get("netmamba_pretrain_datasets", []):
-            if not _is_completed(state, TaskKey(dataset=dataset_id, stage="normalize")):
+            if not _is_completed(state, TaskKey(dataset=dataset_id, stage="derive_inputs")):
                 return False
         return True
     if key.stage in {"verify_data", "parse", "normalize", "ami_detection", "split"}:
-        order = ["download", "verify_data", "parse", "normalize", "ami_detection", "split"]
+        order = ["download", "verify_data", "parse", "normalize", "derive_inputs", "ami_detection", "split"]
         previous = order[order.index(key.stage) - 1]
         return _is_completed(state, TaskKey(dataset=key.dataset, stage=previous))
+    if key.stage == "derive_inputs":
+        return _is_completed(state, TaskKey(dataset=key.dataset, stage="normalize"))
     if key.stage == "mitigation_prepare":
         return _is_completed(state, TaskKey(dataset=key.dataset, stage="split"))
     if key.stage == "train_eval":
@@ -92,8 +100,17 @@ def run_pipeline(paths: ProjectPaths, state: PipelineState, datasets: list[dict[
         elif key.stage == "train_eval":
             dataset = dataset_map[key.dataset]
             run_train_eval(paths, state, dataset, experiments, key.model or "", key.strategy or "")
+        elif key.stage == "derive_inputs":
+            dataset = dataset_map[key.dataset]
+            from .stages import run_derive_inputs
+
+            run_derive_inputs(paths, state, dataset, experiments)
         elif key.stage == "netmamba_pretrain":
             run_netmamba_pretrain(paths, state, experiments)
+        elif key.stage == "netmamba_pretrain_prepare":
+            from .stages import run_netmamba_pretrain_prepare
+
+            run_netmamba_pretrain_prepare(paths, state, experiments)
 
 
 def summarize_tasks(tasks: Iterable[dict[str, Any]]) -> dict[str, int]:
