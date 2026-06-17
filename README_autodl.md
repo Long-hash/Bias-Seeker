@@ -1,0 +1,124 @@
+# BiasSeeker AutoDL Reproduction
+
+This repository contains a resumable reproduction scaffold for **Bias in the Shadows: Explore Shortcuts in Encrypted Network Traffic Classification**.
+
+The pipeline is intentionally strict:
+
+- It never silently skips a dataset, model, mitigation strategy, or failed stage.
+- If an automatic download or stage fails, it writes a failure report and waits for manual repair.
+- Re-running the same command resumes unfinished work from the saved state.
+- NetMamba and Decision Tree are both included, with combined and per-model reports.
+- Encrypted application classification receives a separate focused report.
+
+## AutoDL Setup
+
+Create an AutoDL instance with an H800 80GB GPU, then clone or upload this project.
+
+Recommended base dependencies:
+
+```bash
+apt-get update
+apt-get install -y tshark
+python -m pip install -e .
+```
+
+If `tshark` asks whether non-root users may capture packets, either answer is fine for offline pcap parsing.
+
+## NetMamba Official Integration
+
+The official implementation is `wangtz19/NetMamba`:
+
+```bash
+bash scripts/setup_netmamba_official.sh
+```
+
+That script clones `https://github.com/wangtz19/NetMamba.git`, installs its bundled Mamba 1.1.1 extension, installs the official requirements, and downloads the original NetMamba Hugging Face checkpoint to:
+
+```text
+external/NetMamba/checkpoints/pre-train.pth
+```
+
+For this BiasSeeker reproduction, that original NetMamba checkpoint is only a reference artifact. The paper re-pre-trains NetMamba on six public datasets:
+
+- CICIOT2022
+- CrossPlatform Android
+- CrossPlatform iOS
+- ISCXVPN2016
+- USTC-TFC2016
+- ISCXTor2016
+
+The reproduction checkpoint must be generated at:
+
+```text
+outputs/checkpoints/netmamba_reproduced_pretrain/pre-train.pth
+```
+
+The runner calls `scripts/pretrain_netmamba_reproduction.sh` before any NetMamba mitigation fine-tuning. Fine-tuning uses `scripts/run_netmamba_official.sh`, which wraps the official `src/fine-tune.py` command.
+
+Important: the paper changes NetMamba's original data setup by using **bidirectional session flows** instead of unidirectional flows. For each session it uses the first 5 packets, with the first 80 header bytes and first 240 payload bytes per packet, while keeping or discarding header fields according to the shortcut mitigation strategy. The runner treats missing bidirectional-session NetMamba inputs as a blocking failure, not a skippable condition.
+
+## Directory Layout
+
+The runner creates these directories:
+
+```text
+data/raw/          original dataset files
+data/interim/      tshark JSON and flattened packet fields
+data/processed/    normalized fields, splits, model inputs
+outputs/state/     resumable task state
+outputs/failures/  failure reports and manifests
+outputs/tables/    generated result tables
+outputs/figures/   generated figures
+outputs/logs/      command logs
+reports/           detailed reproduction reports
+external/          official third-party code such as NetMamba
+```
+
+## Run
+
+Show current state:
+
+```bash
+python -m biasseeker.cli status
+```
+
+Run or resume the complete pipeline:
+
+```bash
+python -m biasseeker.cli run
+```
+
+Generate reports from the latest state:
+
+```bash
+python -m biasseeker.cli report
+```
+
+Run tests:
+
+```bash
+python -m unittest discover -s tests
+```
+
+## Manual Dataset Recovery
+
+When a dataset cannot be downloaded automatically, the runner marks that dataset stage as `awaiting_manual_fix` and writes:
+
+```text
+outputs/failures/<dataset>/<stage>/failure_report.md
+outputs/failures/<dataset>/<stage>/failure_manifest.json
+```
+
+Read the report, manually download the required files, place them under the configured `data/raw/<dataset>/` directory, then run:
+
+```bash
+python -m biasseeker.cli run
+```
+
+The runner will detect the new files and continue from the failed stage.
+
+## Important Reproduction Notes
+
+The paper does not publicly specify every seed, sampled class list, private preprocessing script, or NetMamba checkpoint. This scaffold records those unresolved details in the generated reports instead of inventing them.
+
+Official NetMamba code/checkpoints should be configured in `configs/experiments.json` when available. Until then, the NetMamba training stages stop with actionable failure reports rather than fabricating results.

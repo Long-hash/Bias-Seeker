@@ -1,0 +1,238 @@
+{
+  "root": "data/raw",
+  "datasets": [
+    {
+      "id": "nordvpn",
+      "name": "NordVPN",
+      "task": "vpn",
+      "paper_role": "detection",
+      "download_url": null,
+      "manual_source": "AppSniffer dataset source cited by the paper; requires manual acquisition if no public direct URL is available.",
+      "expected_files": ["nordvpn.pcap"],
+      "checksum": null
+    },
+    {
+      "id": "supervpn",
+      "name": "SuperVPN",
+      "task": "vpn",
+      "paper_role": "detection",
+      "download_url": null,
+      "manual_source": "AppSniffer dataset source cited by the paper; requires manual acquisition if no public direct URL is available.",
+      "expected_files": ["supervpn.pcap"],
+      "checksum": null
+    },
+    {
+      "id": "surfsharkvpn",
+      "name": "SurfsharkVPN",
+      "task": "vpn",
+      "paper_role": "detection_and_mitigation",
+      "download_url": null,
+      "manual_source": "AppSniffer dataset source cited by the paper.",
+      "expected_files": ["surfsharkvpn.pcap"],
+      "checksum": null,
+      "mitigation": {
+        "paper_classes": 151,
+        "paper_flows": 7500,
+        "used_classes": 30,
+        "used_flows": 1500
+      }
+    },
+    {
+      "id": "turbovpn",
+      "name": "TurboVPN",
+      "task": "vpn",
+      "paper_role": "detection",
+      "download_url": null,
+      "manual_source": "AppSniffer dataset source cited by the paper; requires manual acquisition if no public direct URL is available.",
+      "expected_files": ["turbovpn.pcap"],
+      "checksum": null
+    },
+    {
+      "id": "iscxvpn2016",
+      "name": "ISCXVPN2016",
+      "task": "vpn",
+      "paper_role": "detection_pretrain_mitigation",
+      "download_url": null,
+      "manual_source": "UNB/CIC ISCXVPN2016 dataset page.",
+      "expected_files": ["iscxvpn2016.pcap"],
+      "checksum": null,
+      "mitigation": {
+        "paper_classes": 13,
+        "paper_flows": 37770,
+        "used_classes": 13,
+        "used_flows": 6124
+      }
+    },
+    {
+      "id": "cic_andmal2017_adware",
+      "name": "CIC-AndMal2017 Adware",
+      "task": "malware",
+      "paper_role": "detection",
+      "download_url": null,
+      "manual_source": "CIC-AndMal2017 dataset; Adware category.",
+      "expected_files": ["adware.pcap"],
+      "checksum": null
+    },
+    {
+      "id": "cic_andmal2017_scareware",
+      "name": "CIC-AndMal2017 Scareware",
+      "task": "malware",
+      "paper_role": "detection",
+      "download_url": null,
+      "manual_source": "CIC-AndMal2017 dataset; Scareware category.",
+      "expected_files": ["scareware.pcap"],
+      "checksum": null
+    },
+    {
+      "id": "cic_andmal2017_sms_malware",
+      "name": "CIC-AndMal2017 SMS-Malware",
+      "task": "malware",
+      "paper_role": "detection",
+      "download_url": null,
+      "manual_source": "CIC-AndMal2017 dataset; SMS-Malware category.",
+      "expected_files": ["sms_malware.pcap"],
+      "checksum": null
+    },
+    {
+      "id": "ransomware",
+      "name": "Ransomware",
+      "task": "malware",
+      "paper_role": "detection_and_mitigation",
+      "download_url": null,
+      "manual_source": "CIC-AndMal2017 Ransomware category.",
+      "expected_files": ["ransomware.pcap"],
+      "checksum": null,
+      "mitigation": {
+        "paper_classes": 10,
+        "paper_flows": 196803,
+        "used_classes": 10,
+        "used_flows": 5000
+      }
+    },
+    {
+      "id": "ustc_tfc2016",
+      "name": "USTC-TFC2016",
+      "task": "malware",
+      "paper_role": "detection_pretrain_mitigation",
+      "download_url": null,
+      "manual_source": "USTC-TFC2016 public dataset.",
+      "expected_files": ["ustc_tfc2016.pcap"],
+      "checksum": null,
+      "mitigation": {
+        "paper_classes": 20,
+        "paper_flows": 489139,
+        "used_classes": 20,
+        "used_flows": 10000
+      }
+    },
+    {
+      "id": "crossplatform_android",
+      "name": "CrossPlatform Android",
+      "task": "encrypted_application",
+      "paper_role": "detection_pretrain",
+      "download_url": null,
+      "manual_source": "CrossPlatform Android dataset cited by the paper.",
+      "expected_files": ["crossplatform_android.pcap"],
+      "checksum": null,
+      "application_focus": true
+    },
+    {
+      "id": "crossplatform_ios",
+      "name": "CrossPlatform iOS",
+      "task": "encrypted_application",
+      "paper_role": "detection_pretrain",
+      "download_url": null,
+      "manual_source": "CrossPlatform iOS dataset cited by the paper.",
+      "expected_files": ["crossplatform_ios.pcap"],
+      "checksum": null,
+      "application_focus": true
+    },
+    {
+      "id": "crossnet2021",
+      "name": "CrossNet2021",
+      "task": "encrypted_application",
+      "paper_role": "detection_and_mitigation",
+      "download_url": null,
+      "manual_source": "CrossNet2021 dataset cited by the paper.",
+      "expected_files": ["crossnet2021.pcap"],
+      "checksum": null,
+      "application_focus": true,
+      "mitigation": {
+        "paper_classes": 20,
+        "paper_flows": 4443,
+        "used_classes": 20,
+        "used_flows": 4443
+      }
+    },
+    {
+      "id": "crossnet_a",
+      "name": "CrossNet-A",
+      "task": "encrypted_application",
+      "paper_role": "task_agnostic_kl",
+      "download_url": null,
+      "manual_source": "CrossNet scenario A: stable 100 Mbps, low latency, no artificial delay or jitter.",
+      "expected_files": ["crossnet_a.pcap"],
+      "checksum": null,
+      "application_focus": true
+    },
+    {
+      "id": "crossnet_b",
+      "name": "CrossNet-B",
+      "task": "encrypted_application",
+      "paper_role": "task_agnostic_kl",
+      "download_url": null,
+      "manual_source": "CrossNet scenario B: 10 Mbps, 2.5%-5% packet loss, about 200 ms delay.",
+      "expected_files": ["crossnet_b.pcap"],
+      "checksum": null,
+      "application_focus": true
+    },
+    {
+      "id": "cstnet_tls13",
+      "name": "CSTNET-TLS1.3",
+      "task": "encrypted_application",
+      "paper_role": "detection_and_mitigation",
+      "download_url": null,
+      "manual_source": "CSTNET-TLS1.3 dataset from ET-BERT paper.",
+      "expected_files": ["cstnet_tls13.pcap"],
+      "checksum": null,
+      "application_focus": true,
+      "mitigation": {
+        "paper_classes": 120,
+        "paper_flows": 46372,
+        "used_classes": 18,
+        "used_flows": 7108
+      }
+    },
+    {
+      "id": "cipherspectrum",
+      "name": "CipherSpectrum",
+      "task": "encrypted_application",
+      "paper_role": "detection",
+      "download_url": null,
+      "manual_source": "CipherSpectrum dataset cited by NTC-Enigma.",
+      "expected_files": ["cipherspectrum.pcap"],
+      "checksum": null,
+      "application_focus": true
+    },
+    {
+      "id": "ciciot2022",
+      "name": "CICIOT2022",
+      "task": "pretraining",
+      "paper_role": "pretrain",
+      "download_url": null,
+      "manual_source": "CICIOT2022 public dataset used for NetMamba pre-training.",
+      "expected_files": ["ciciot2022.pcap"],
+      "checksum": null
+    },
+    {
+      "id": "iscxtor2016",
+      "name": "ISCXTor2016",
+      "task": "pretraining",
+      "paper_role": "pretrain",
+      "download_url": null,
+      "manual_source": "ISCXTor2016 public dataset used for NetMamba pre-training.",
+      "expected_files": ["iscxtor2016.pcap"],
+      "checksum": null
+    }
+  ]
+}

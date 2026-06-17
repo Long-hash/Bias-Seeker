@@ -1,0 +1,79 @@
+{
+  "state_version": 1,
+  "seeds": [2026, 2027, 2028],
+  "stages": [
+    "download",
+    "verify_data",
+    "parse",
+    "normalize",
+    "ami_detection"
+  ],
+  "mitigation_stages": [
+    "split",
+    "mitigation_prepare",
+    "train_eval"
+  ],
+  "models": {
+    "netmamba": {
+      "enabled": true,
+      "kind": "external",
+      "official_repo": "https://github.com/wangtz19/NetMamba.git",
+      "official_repo_dir": "external/NetMamba",
+      "checkpoint_url": "https://huggingface.co/wangtz/NetMamba/resolve/main/pre-train.pth",
+      "checkpoint_path": "outputs/checkpoints/netmamba_reproduced_pretrain/pre-train.pth",
+      "reference_checkpoint_path": "external/NetMamba/checkpoints/pre-train.pth",
+      "pretrain_required": true,
+      "pretrain_command": "bash scripts/pretrain_netmamba_reproduction.sh --repo external/NetMamba --data-path data/processed/netmamba_pretrain/bidirectional_sessions --output-dir outputs/checkpoints/netmamba_reproduced_pretrain",
+      "train_command": "bash scripts/run_netmamba_official.sh --repo external/NetMamba --dataset {dataset} --strategy {strategy} --data-path {data_path} --output-dir {output_dir} --checkpoint {checkpoint_path} --nb-classes {nb_classes}",
+      "checkpoint_required": true,
+      "notes": "Official source: wangtz19/NetMamba. BiasSeeker does not directly use the original NetMamba paper checkpoint; full reproduction must pre-train a new NetMamba on the six paper-specified public datasets, using bidirectional session flows and mitigation-specific header handling."
+    },
+    "decision_tree": {
+      "enabled": true,
+      "kind": "builtin",
+      "max_depth": null,
+      "random_state": 2026
+    }
+  },
+  "mitigation_strategies": [
+    "none_full_feature",
+    "zero_sii",
+    "zero_sni",
+    "random_sii",
+    "random_sni",
+    "zero_tcp_timestamp",
+    "zero_seq_ack",
+    "relative_tcp_timestamp",
+    "relative_seq_ack",
+    "random_tcp_timestamp",
+    "random_seq_ack",
+    "zero_ip_ttl",
+    "zero_tcp_window",
+    "zero_ip_checksum",
+    "zero_tcp_udp_checksum",
+    "random_ip_ttl",
+    "random_tcp_window",
+    "random_ip_checksum",
+    "random_tcp_udp_checksum"
+  ],
+  "netmamba_input": {
+    "packets_per_flow": 5,
+    "header_bytes": 80,
+    "payload_bytes": 240,
+    "flow_direction": "bidirectional_session",
+    "header_policy": "keep_or_discard_fields_by_shortcut_mitigation_strategy"
+  },
+  "netmamba_pretrain_datasets": [
+    "ciciot2022",
+    "crossplatform_android",
+    "crossplatform_ios",
+    "iscxvpn2016",
+    "ustc_tfc2016",
+    "iscxtor2016"
+  ],
+  "sampling": {
+    "max_flows_per_class": 500,
+    "split_ratio": [0.8, 0.1, 0.1],
+    "repetitions": 3
+  }
+}
